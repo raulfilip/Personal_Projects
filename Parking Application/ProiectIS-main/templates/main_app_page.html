@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main App Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('{{ url_for('static', filename='imagine_parcare.jpg') }}') center/cover no-repeat;
+        }
+    
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+    
+        nav {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background-color: #007bff;
+            padding: 10px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+    
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+    
+        nav a:hover {
+            color: #fff; /* Change to your hover color */
+        }
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px; /* Adjust as needed */
+        }
+    
+        label {
+            color: #fff;
+            margin-top: 10px;
+        }
+    
+        select, input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 200px;
+        }
+    
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+    
+        button:hover {
+            background-color: #0056b3;
+        }
+    
+        ul.suboptions {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+    
+        ul.suboptions li {
+            margin-top: 5px;
+        }
+    
+        #urmarire-parcare-label {
+            display: none;
+            color: #fff;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        function toggleParkingFilterSuboptions() {
+            var suboptions = document.getElementById("parking-filter-suboptions");
+            suboptions.style.display = suboptions.style.display === "none" ? "block" : "none";
+        }
+
+        function setParkingFilterSuboption(value) {
+            var select = document.getElementById("filtru-parcari");
+            select.value = value;
+        }
+
+        function toggleReservationSuboptions() {
+            var suboptions = document.getElementById("reservation-suboptions");
+            suboptions.style.display = suboptions.style.display === "none" ? "block" : "none";
+        }
+
+        function setReservationSuboption(value) {
+            // Add logic for handling reservation suboptions if needed
+            console.log("Selected reservation suboption:", value);
+        }
+
+        function submitLocation() {
+            var locationInput = document.getElementById("user-location").value;
+
+            // Send the location input to your Python file using fetch or any preferred method
+            fetch('/all_parkings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 'user-location': locationInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Location submitted successfully');
+                    // Optionally, update UI based on the response
+                } else {
+                    console.error('Error submitting location:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getAndSubmitLocation() {
+            // Get the location from the text box
+            var locationInput = document.getElementById("user-location").value;
+
+            // Send the location to the server using AJAX
+            fetch('/process_location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ location: locationInput }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Location sent successfully, now trigger the closest_parking function
+                        triggerClosestParking();
+                    } else {
+                        console.error('Error sending location:', data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getUrmarireParcareData() {
+            fetch('/urmarire_parcare')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayParkingInfo(data.data);
+                    } else {
+                        console.error('Error retrieving parking information.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getUrmarireRezervareData() {
+        fetch('/vezi_rezervare')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayReservationInfo(data.data);
+                } else {
+                    console.error('Error retrieving reservation information.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function displayParkingInfo(parkingData) {
+    // Get the label element
+    var label = document.getElementById("urmarire-parcare-label");
+
+    // Create a table to display the parking information
+    var table = document.createElement("table");
+    table.border = "1";
+    table.style.backgroundColor = "white";  // Set white background
+    table.style.color = "black";  // Set text color to black
+
+    // Create header row
+    var headerRow = table.insertRow(0);
+    for (var key in parkingData[0]) {
+        var headerCell = headerRow.insertCell(-1);
+        headerCell.innerHTML = key;
+    }
+
+    // Create data rows
+    for (var i = 0; i < parkingData.length; i++) {
+        var dataRow = table.insertRow(-1);
+        for (var key in parkingData[i]) {
+            var dataCell = dataRow.insertCell(-1);
+            
+            // Check for specific keys and modify displayed text
+            if (key === 'locuri rezervate') {
+                dataCell.innerHTML = 'locuri ocupate';  // Modify as needed
+            } else if (key === 'locuri ocupate') {
+                dataCell.innerHTML = 'locuri rezervate';  // Modify as needed
+            } else {
+                dataCell.innerHTML = parkingData[i][key];
+            }
+        }
+    }
+
+    // Create close button
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "X";
+    closeButton.onclick = function() {
+        label.style.display = "none";
+    };
+
+    // Append the table and close button to the label
+    label.innerHTML = "";
+    label.appendChild(closeButton);
+    label.appendChild(table);
+    label.style.display = "block";
+}
+
+function displayReservationInfo(reservationData) {
+    // Get the label element
+    var label = document.getElementById("reservation-info-label");
+
+    // Create a table to display the reservation information
+    var table = document.createElement("table");
+    table.border = "1";
+    table.style.backgroundColor = "white";  // Set white background
+    table.style.color = "black";  // Set text color to black
+
+    // Create header row with customized order
+    var headerRow = table.insertRow(0);
+    var customOrder = ['ID Rezervare', 'Denumire', 'Locatie', 'Pret'];
+    for (var key of customOrder) {
+        var headerCell = headerRow.insertCell(-1);
+        headerCell.innerHTML = key;
+    }
+
+    // Create data rows with customized order
+    for (var i = 0; i < reservationData.length; i++) {
+        var dataRow = table.insertRow(-1);
+        for (var key of customOrder) {
+            var dataCell = dataRow.insertCell(-1);
+            dataCell.innerHTML = reservationData[i][key];
+        }
+    }
+
+    // Create close button
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "X";
+    closeButton.onclick = function () {
+        label.style.display = "none";
+    };
+
+    // Append the table and close button to the label
+    label.innerHTML = "";
+    label.appendChild(closeButton);
+    label.appendChild(table);
+    label.style.display = "block";
+}
+
+function showMakeReservationForm() {
+    // Hide other forms if they are displayed
+    document.getElementById("urmarire-parcare-label").style.display = "none";
+
+    // Display the "Make Reservation" form
+    document.getElementById("make-reservation-form").style.display = "block";
+}
+
+function closeMakeReservationForm() {
+    // Close the "Make Reservation" form
+    document.getElementById("make-reservation-form").style.display = "none";
+}
+
+function toggleReservationSuboptions() {
+    var suboptions = document.getElementById("reservation-suboptions");
+    suboptions.style.display = suboptions.style.display === "none" ? "block" : "none";
+
+    // Clear the existing options when toggling
+    var select = document.getElementById("available-parkings");
+    select.innerHTML = "";
+
+    if (suboptions.style.display === "block") {
+        // If "Make Reservation" is selected, fetch available parkings
+        fetch('/available_parkings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the combo box with available parkings
+                    data.data.forEach(parking => {
+                        var option = document.createElement("option");
+                        option.value = parking['ID Parcare'];
+                        option.text = parking['Denumire'];
+                        select.add(option);
+                    });
+                } else {
+                    console.error('Error retrieving available parkings.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+}
+function confirmReservation() {
+    var selectedParking = document.getElementById("available-parkings").value;
+
+    // Call a function in your Python file to handle the selected parking
+    // Modify the URL and data based on your server-side implementation
+    fetch('/confirm_reservation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 'selectedParking': selectedParking }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Reservation confirmed successfully');
+            // Optionally, update UI based on the response
+        } else {
+            console.error('Error confirming reservation:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function showCancelReservationForm() {
+    // Hide other forms if they are displayed
+    document.getElementById("urmarire-parcare-label").style.display = "none";
+    document.getElementById("make-reservation-form").style.display = "none";
+
+    // Display the "Cancel Reservation" form
+    var cancelForm = document.getElementById("cancel-reservation-form");
+    cancelForm.style.display = "block";
+
+    // Fetch user's reservations
+    fetch('/user_reservations')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the combo box with reservation IDs
+                var select = document.getElementById("reservation-id");
+                select.innerHTML = "";
+                data.data.forEach(reservation => {
+                    var option = document.createElement("option");
+                    option.value = reservation['ID Rezervare'];
+                    option.text = reservation['ID Rezervare'];
+                    select.add(option);
+                });
+            } else {
+                console.error('Error retrieving user reservations.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function cancelReservation() {
+    // Get the selected reservation ID
+    var selectedReservation = document.getElementById("reservation-id").value;
+
+    // Call a function in your Python file to handle the cancellation
+    // Modify the URL and data based on your server-side implementation
+    fetch('/cancel_reservation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 'selectedReservation': selectedReservation }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Reservation canceled successfully');
+            // Optionally, update UI based on the response
+        } else {
+            console.error('Error canceling reservation:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function closeCancelReservationForm() {
+    // Close the "Cancel Reservation" form
+    document.getElementById("cancel-reservation-form").style.display = "none";
+}
+
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="toggleParkingFilterSuboptions()">Parking Filter</a>
+        <ul id="parking-filter-suboptions" class="suboptions" style="display: none;">
+            <li><a href="{{ url_for('cheapest_parking') }}">Cheapest Parking</a></li>
+            <li><a href="{{ url_for('closest_parking') }}">Closest Parking</a></li>
+            <li><a href="{{ url_for('all_parkings') }}">All Parkings</a></li>
+        </ul>
+
+        <a href="#" onclick="toggleReservationSuboptions()">Reservation</a>
+        <ul id="reservation-suboptions" class="suboptions" style="display: none;">
+            <li><a href="#" onclick="showMakeReservationForm()">Make Reservation</a></li>
+            <li><a href="#" onclick="getUrmarireRezervareData()">See Reservation</a></li>
+            <li><a href="#" onclick="showCancelReservationForm()">Cancel Reservation</a></li>
+        </ul>
+        
+        <a href="#" onclick="getUrmarireParcareData()">Show Parking Spots</a>
+        <!-- Add more menu items as needed -->
+    </nav>
+
+    <h1>Please enter your location!</h1>
+
+    <!-- Form for entering location and submitting -->
+    <form id="location-form">
+        <label for="user-location">Location:</label>
+        <input type="text" id="user-location" name="user-location" required>
+        <button type="button" onclick="getAndSubmitLocation()">Submit</button>
+    </form>
+
+    <!-- Label for displaying parking information -->
+    <div id="urmarire-parcare-label" style="display: none; color: #fff; margin-top: 20px;"></div>
+    <div id="reservation-info-label" style="display: none; color: #fff; margin-top: 20px;"></div>
+    <div id="make-reservation-form" style="display: none; color: #fff; margin-top: 20px;">
+        <button onclick="closeMakeReservationForm()">X</button>
+        <form id="reservation-form">
+            <label for="available-parkings">Select a parking:</label>
+            <select id="available-parkings" required>
+                <!-- Options will be dynamically added using JavaScript -->
+            </select>
+            <button type="button" onclick="confirmReservation()">Confirm Reservation</button>
+        </form>
+    </div>
+
+    <div id="cancel-reservation-form" style="display: none; color: #fff; margin-top: 20px;">
+        <button onclick="closeCancelReservationForm()">X</button>
+        <form id="cancel-form">
+            <label for="reservation-id">Select a reservation to cancel:</label>
+            <select id="reservation-id" required>
+                <!-- Options will be dynamically added using JavaScript -->
+            </select>
+            <button type="button" onclick="cancelReservation()">Cancel Reservation</button>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_254f43bfd0765289bf20902bfce7857c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_254f43bfd0765289bf20902bfce7857c" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_254f43bfd0765289bf20902bfce7857c = L.map(
+                "map_254f43bfd0765289bf20902bfce7857c",
+                {
+                    center: [46.7685431, 23.5993315],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_201e748be572b4236edcc1c278624c9e = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_201e748be572b4236edcc1c278624c9e.addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            var marker_ca27d4d8dd70b007d91ced509ead3ac4 = L.marker(
+                [46.7685431, 23.5993315],
+                {}
+            ).addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            marker_ca27d4d8dd70b007d91ced509ead3ac4.bindTooltip(
+                `<div>
+                     Adresa curenta
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_4fc79e883ca408d1f32296ef4a012219 = L.marker(
+                [46.7677103, 23.6009421],
+                {}
+            ).addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            var icon_dc7ef2c30e5a44b47df8778be3ec9927 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_4fc79e883ca408d1f32296ef4a012219.setIcon(icon_dc7ef2c30e5a44b47df8778be3ec9927);
+        
+    
+            marker_4fc79e883ca408d1f32296ef4a012219.bindTooltip(
+                `<div>
+                     Parcare Titulescu
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_a293cb93484662127d1f5bff2e48d6ce = L.marker(
+                [46.76974885, 23.589726652190148],
+                {}
+            ).addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            var icon_8fbe11e4089a0c7d6e76841eb13d4b3a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_a293cb93484662127d1f5bff2e48d6ce.setIcon(icon_8fbe11e4089a0c7d6e76841eb13d4b3a);
+        
+    
+            marker_a293cb93484662127d1f5bff2e48d6ce.bindTooltip(
+                `<div>
+                     Parcare Unirii
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_3db37c6d66aa286b503aad2a63921dfb = L.marker(
+                [46.7517257, 23.5627727],
+                {}
+            ).addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            var icon_b28c0f41565b632976250e325b6f5c71 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_3db37c6d66aa286b503aad2a63921dfb.setIcon(icon_b28c0f41565b632976250e325b6f5c71);
+        
+    
+            marker_3db37c6d66aa286b503aad2a63921dfb.bindTooltip(
+                `<div>
+                     Parcare Kaufland
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_a7b38ef9c4d13c2c97746f1ac07ce461 = L.marker(
+                [46.7990854, 23.6080403],
+                {}
+            ).addTo(map_254f43bfd0765289bf20902bfce7857c);
+        
+    
+            var icon_938fd2979f74987d6b7d60154833dd27 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_a7b38ef9c4d13c2c97746f1ac07ce461.setIcon(icon_938fd2979f74987d6b7d60154833dd27);
+        
+    
+            marker_a7b38ef9c4d13c2c97746f1ac07ce461.bindTooltip(
+                `<div>
+                     Parking Muncii
+                 </div>`,
+                {"sticky": true}
+            );
+        
+</script>
+</html>

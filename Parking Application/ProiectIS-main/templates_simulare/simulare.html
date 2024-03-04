@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulare Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Reservation form styles */
+        #reservation-form {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #reservation-info {
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            display: flex;
+        }
+
+        #confirm-button, #close-button {
+            margin: 5px;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        #success-message {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulare Page</h1>
+
+    <!-- Three buttons -->
+    <button onclick="ocupaLocLiber()">Ocupa Loc Liber</button>
+    <button onclick="showReservationForm()">Ocupa Loc Rezervat</button>
+    <button onclick="paraseste_parcare()">Paraseste Parcare</button>
+
+    <!-- Reservation form -->
+    <form id="reservation-form">
+        <label for="reservation-info">Enter reservation information:</label>
+        <input type="text" id="reservation-info" placeholder="Introduceti id-ul rezervarii" required>
+        <div class="button-container">
+            <button id="confirm-button" onclick="confirmReservation()">Confirm</button>
+            <button id="close-button" onclick="hideReservationForm()">X</button>
+        </div>
+        
+    </form>
+
+    <!-- Success message -->
+    <div id="success-message"></div>
+    <div id="message-container"></div>
+    <script>
+        function showReservationForm() {
+            var reservationForm = document.getElementById("reservation-form");
+            reservationForm.style.display = "flex";
+        }
+
+        function confirmReservation() {
+        var reservationId = document.getElementById("reservation-info").value.trim();
+        if (reservationId !== '') {
+            // Send reservationId to the server and handle confirmation logic
+            fetch('/ocupa_loc_rezervat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reservationId: reservationId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayMessage(data);
+                if (data.success) {
+                    hideReservationForm();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    }
+
+    function displayMessage(data) {
+        var messageContainer = document.getElementById("message-container");
+        messageContainer.textContent = data.message;
+
+        if (data.success) {
+            messageContainer.style.color = 'green';
+        } else {
+            messageContainer.style.color = 'red';
+        }
+
+        // Clear the message after a certain duration (e.g., 3000 milliseconds or 3 seconds)
+        setTimeout(() => {
+            messageContainer.textContent = '';
+        }, 15000);
+    }
+        function hideReservationForm() {
+            var reservationForm = document.getElementById("reservation-form");
+            reservationForm.style.display = "none";
+        }
+
+        function ocupaLocLiber() {
+            fetch('/ocupa_loc_liber', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.message);
+                    // Display success message
+                    displaySuccessMessage(data.message);
+                } else {
+                    console.error('Error:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function paraseste_parcare() {
+            fetch('/paraseste_parcare', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.message);
+                    // Display success message
+                    displaySuccessMessage(data.message);
+                } else {
+                    console.error('Error:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to display the success message
+        function displaySuccessMessage(message) {
+            var successMessageElement = document.getElementById("success-message");
+            successMessageElement.textContent = message;
+    
+            // Clear the message after a certain duration (e.g., 3000 milliseconds or 3 seconds)
+            setTimeout(() => {
+                successMessageElement.textContent = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

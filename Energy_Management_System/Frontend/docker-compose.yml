@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  chat-db:
+    image: mysql:8.0
+    container_name: chat-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: chat
+    ports:
+      - "3307:3306"
+    volumes:
+      - chat-db-data:/var/lib/mysql
+
+  smartenergydevice-db:
+    image: mysql:8.0
+    container_name: smartenergydevice-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: smartenergydevice
+    ports:
+      - "3308:3306"
+    volumes:
+      - smartenergydevice-db-data:/var/lib/mysql
+
+  user-db:
+    image: mysql:8.0
+    container_name: user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: user
+    ports:
+      - "3309:3306"
+    volumes:
+      - user-db-data:/var/lib/mysql
+
+  chat:
+    build:
+      context: ../Chat
+      dockerfile: Dockerfile
+    container_name: chat
+    environment:
+      DB_IP: chat-db
+      DB_PORT: 3306
+      DB_DBNAME: chat
+      DB_USER: root
+      DB_PASSWORD: root1234
+    ports:
+      - "8082:8082"
+    depends_on:
+      - chat-db
+
+  smartenergydevice:
+    build:
+      context: ../SmartEnergyDevice
+      dockerfile: Dockerfile
+    container_name: smartenergydevice
+    environment:
+      DB_IP: smartenergydevice-db
+      DB_PORT: 3306
+      DB_DBNAME: smartenergydevice
+      DB_USER: root
+      DB_PASSWORD: root1234
+    ports:
+      - "8080:8080"
+    depends_on:
+      - smartenergydevice-db
+    command: [ "./wait-for-it.sh", "smartenergydevice-db:3306", "--", "java", "-jar", "app.jar" ]
+
+
+  user:
+    build:
+      context: ../User
+      dockerfile: Dockerfile
+    container_name: user
+    environment:
+      DB_IP: user-db
+      DB_PORT: 3306
+      DB_DBNAME: user
+      DB_USER: root
+      DB_PASSWORD: root1234
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user-db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontend
+    environment:
+      REACT_APP_BACKEND_USER: http://user:8081
+      REACT_APP_BACKEND_CHAT: http://chat:8082
+      REACT_APP_BACKEND_SMARTENERGYDEVICE: http://smartenergydevice:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user
+      - chat
+      - smartenergydevice
+
+volumes:
+  chat-db-data:
+  smartenergydevice-db-data:
+  user-db-data:
